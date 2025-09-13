@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}  # store in Secrets, not in code
           protocol: "ftps"
           port: 2222                              # change or put in a secret if needed
-          local-dir: /                      # path in your repo to upload
+          local-dir: "./*"                      # path in your repo to upload
           server-dir: /              # remote path on the server
           # The action only uploads changed files; keep a state file to speed up subsequent runs
           state-name: .ftp-deploy-sync-state.json
