@@ -26,7 +26,8 @@ jobs:
       #     npm run build
 
       - name: Upload over SFTP
-        uses: marrik96/btwc
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+
         with:
           server: ${{ secrets.SFTP_HOST }}        # e.g. "sftp.example.com"
           username: ${{ secrets.SFTP_USERNAME }}  # e.g. "deploy"
