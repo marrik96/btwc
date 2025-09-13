@@ -1,28 +1,46 @@
-            - name: SFTP Remote
-  # You may pin to the exact commit or the version.
-  # uses: wearesection/sftp-remote@d54b205a80384f1b690059450ca41077d3f9ffb2
-  uses: wearesection/sftp-remote@1.0.1
-  with:
-    # Host to login
-    host:${{ secrets.SFTP_HOST }} # default is localhost
-    # Port to login
-    port:2222 # optional, default is 22
-    # Username to login
-    username:${{ secrets.SFTP_USER }} # default is root
-    # Passwort to login
-    password:${{ secrets.SFTP_PASSWORD }} # default is password
-    # Map of the path to upload multiple files.
-    additionalPaths: # optional, default is {}
-    # Local file or directory
-    localPath: 
-    # Remote file or directory path (file or directories will be created)
-    remotePath: 
-    # Path to ssh-agent
-    agent: # optional, default is process.env.SSH_AGENT
-    # Path to key file or directly the key (via secret or paste)
-    privateKey: # optional
-    # Define if private key is a local file or string
-    privateKeyIsFile: # optional, default is false
-    # Define a passphrase for encrypted private keys
-    passphrase: # optional
-          
+name: Deploy via SFTP
+
+on:
+  push:
+    branches: [ "main" ]          # change if your default branch is different
+    # (optional) only run when site files change
+    # paths:
+    #   - "dist/**"
+
+concurrency:
+  group: sftp-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # If you build your site, add your build step(s) here
+      # - name: Build
+      #   run: |
+      #     npm ci
+      #     npm run build
+
+      - name: Upload over SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.SFTP_HOST }}        # e.g. "sftp.example.com"
+          username: ${{ secrets.SFTP_USERNAME }}  # e.g. "deploy"
+          password: ${{ secrets.SFTP_PASSWORD }}  # store in Secrets, not in code
+          protocol: "sftp"
+          port: 2222                              # change or put in a secret if needed
+          local-dir: ./dist/                      # path in your repo to upload
+          server-dir: /              # remote path on the server
+          # The action only uploads changed files; keep a state file to speed up subsequent runs
+          state-name: .ftp-deploy-sync-state.json
+          # Exclude stuff you never want to upload
+          exclude: |
+            **/.git**
+            **/.github/**
+            **/node_modules/**
+            **/.DS_Store
+            **/*.map
