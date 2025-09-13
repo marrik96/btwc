@@ -32,7 +32,7 @@ jobs:
           server: ${{ secrets.SFTP_HOST }}        # e.g. "sftp.example.com"
           username: ${{ secrets.SFTP_USERNAME }}  # e.g. "deploy"
           password: ${{ secrets.SFTP_PASSWORD }}  # store in Secrets, not in code
-          protocol: "ftps"
+          protocol: "sftp"
           port: 2222                              # change or put in a secret if needed
           local-dir: "./"                      # path in your repo to upload
           server-dir: /              # remote path on the server
